@@ -1,0 +1,1 @@
+查看项目概览./.copilot/docs/COPILOT.md，再阅读./.copilot/prompts/apidoc.md。 按./.copilot/prompts/apidoc.md中要求， 为项目生成完整的API文档。

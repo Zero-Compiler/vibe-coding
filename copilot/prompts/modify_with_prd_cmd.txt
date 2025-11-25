@@ -1,0 +1,1 @@
+查看项目概览./.copilot/docs/COPILOT.md、需求文档./.copilot/docs/PRD.md 和代码风格系列指南./.copilot/style/style.md。 参考其中内容，阅读项目完整源码后修复其中提到的所有问题并更新./.copilot/docs/COPILOT.md，最后用中文汇报，将更新内容写在./.copilot/docs/UPDATE_LOG.md 中。注意代码规范，确保所有修改符合最佳实践。另外，请确保所有功能均经过充分测试，并在必要时添加相应的单元测试和集成测试。
