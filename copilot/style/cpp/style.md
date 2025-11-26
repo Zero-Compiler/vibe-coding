@@ -96,16 +96,18 @@
 - **Space before open brace**: `if (condition) {`.
 - **Space after control keywords**: `if (...)`, `for (...)`, `while (...)`.
 - **No space before function call parentheses**: `func()` not `func ()`.
-- **Pointer/reference alignment**:
-  - Google: `int* p` or `int *p` (be consistent).
-  - LLVM: `int *p`.
+- **Pointer/reference alignment**: Attach to type like `type* var`, not to variable.
+
+  ```cpp
+  int* ptr;  // Good
+  int *ptr;  // Bad
+  ```
 
 ### Comments
 
 - **Use C++-style comments** (`//`) for most cases.
 - **Doxygen for documentation**: Use `///` for documentation comments.
-  - `\brief` for summary, `\param` for parameters, `
-eturns` for return value.
+  - `\brief` for summary, `\param` for parameters, `\returns` for return value.
 - **File headers**: Include license, brief description, and reference to paper/algorithm if relevant.
 - **Comment the "why", not the "what"**: Code should be self-documenting; comments explain intent and edge cases.
 
@@ -115,7 +117,8 @@ eturns` for return value.
 
 ### Modern C++ Standards
 
-- **Target C++17 or C++20** (Google: C++20, LLVM: C++17, Core Guidelines: C++20).
+- **Target C++20** : Use modern features for safety and clarity.
+- **Use standard library features**: Prefer STL and standard algorithms over custom implementations.
 - **Avoid vendor-specific extensions** unless necessary and well-encapsulated.
 
 ### Types and Constants
