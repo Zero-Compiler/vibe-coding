@@ -415,7 +415,7 @@ Within each section (`public`, `protected`, `private`):
 - **Avoid non-standard extensions**: Ensure portability.
 - **Use Abseil libraries**: For additional utilities beyond standard library.
 
-### Core Guidelines
+### Core Guidelines-Specific
 
 - **Emphasize safety**: Type safety, bounds safety, lifetime safety.
 - **Use GSL (Guidelines Support Library)**: For `span`, `not_null`, `owner`, `Expects`, `Ensures`, etc.
