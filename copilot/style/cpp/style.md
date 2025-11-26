@@ -16,16 +16,18 @@
 ### LLVM Style
 
 - **Types** (classes, structs, enums): Start with uppercase, camel case (`TextFileReader`).
-- **Variables**: Camel case starting with uppercase (`Leader`, `Boats`).
+- **Variables**: Lowercase with underscores (`table_name`).
 - **Functions**: Verb phrases, camel case starting with lowercase (`openFile()`, `isFoo()`).
+- **Constants**: `k` prefix followed by camel case (`kDaysInAWeek`).
 - **Enumerators**: Start with uppercase, prefix with enum name if not in own namespace (`VK_Argument`).
 
 ### Google Style
 
-- **Types**: Camel case starting with uppercase (`MyExcitingClass`).
+- **Types** (classes, structs, enums): Camel case starting with uppercase (`MyExcitingClass`).
 - **Variables**: Lowercase with underscores (`table_name`).
-- **Functions**: Camel case or lowercase with underscores (`AddTableEntry()`, `add_table_entry()`).
+- **Functions**: Camel case starting with lowercase (`openFile()`, `isFoo()`).
 - **Constants**: `k` prefix followed by camel case (`kDaysInAWeek`).
+- **Enumerators**: Start with uppercase, prefix with enum name if not in own namespace (`VK_Argument`).
 
 ### Core Guidelines
 
