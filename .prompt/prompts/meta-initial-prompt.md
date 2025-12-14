@@ -13,7 +13,7 @@ The two prompts are:
 
 ## Input Context
 
-Read the following two files from `.prompt/`:
+Read the following two files from `.prompt/` **as preliminary reference only**:
 
 ### .prompt/repo-summary.md
 
@@ -27,11 +27,21 @@ If not present, **READ** file `.prompt/prompts/repo-scanner.md` and generate `.p
 
 If not present, **READ** file `.prompt/prompts/repo-scanner.md` and generate `.prompt/key-files-snapshot.md` according to the specifications there. After generating, **STOP** and notify the user that the file has been created and they should rerun the process.
 
+### CRITICAL: Source Code Authority Rule
+
+**The actual source code and project files are the ONLY authoritative source of truth.**
+
+- `.prompt/repo-summary.md` and `.prompt/key-files-snapshot.md` are **preliminary references** that may contain errors, hallucinations, or outdated information from previous AI generations.
+- **ALWAYS verify claims** by reading the actual source files directly.
+- **NEVER blindly trust** the content in these `.prompt/` files—they are hints, not facts.
+- When there is any discrepancy between `.prompt/` files and actual source code, **the source code wins**.
+- If you detect errors in `.prompt/repo-summary.md` or `.prompt/key-files-snapshot.md`, note them in your output, **STOP** editing and **do not rely on that information**.
+
 ## Design Requirements
 
-### A) init.prompt.md must guide the assistant to
+### (A) init.prompt.md must guide the assistant to
 
-1. **Ask 10–20 clarifying questions first** before generating any output. Examples:
+1. **Ask clarifying questions first** before generating any output. The number of questions should be **determined by actual need**—ask as many as necessary to fully understand the project, whether that's 3 questions or 30. Do NOT artificially limit or inflate the count. Examples of useful questions:
    - What is the primary business goal of this project?
    - What are the non-functional requirements (performance, security, scalability)?
    - Are there any compliance constraints (GDPR, SOC2, etc.)?
@@ -40,18 +50,18 @@ If not present, **READ** file `.prompt/prompts/repo-scanner.md` and generate `.p
    - Which directories/files should never be modified by AI?
 
 2. **Generate a "Project Structure Overview"**:
-   - High-level file tree (based on repo-summary.md).
+   - High-level file tree (**read actual directory structure**, use repo-summary.md only as cross-reference).
    - Purpose of each top-level directory.
    - Key entry points (main files, config files, build scripts).
 
 3. **Generate a "Technology Stack Analysis"**:
-   - Core languages, frameworks, key libraries (from repo-summary.md).
+   - Core languages, frameworks, key libraries (**read actual config files like package.json, pyproject.toml, etc.**).
    - Version strategy and compatibility notes.
 
 4. **Generate a "Functional Module Breakdown"**:
    - Logical modules (Auth, Data Access, UI, API, etc.).
    - Primary responsibility and key components of each module.
-   - Cross-module dependencies (use file path evidence from key-files-snapshot.md).
+   - Cross-module dependencies (**analyze actual import statements and file references in source code**).
 
 5. **Generate a "Potential Issues & Architectural Concerns"** (CRITICAL SECTION):
    - Analyze for:
@@ -63,7 +73,11 @@ If not present, **READ** file `.prompt/prompts/repo-scanner.md` and generate `.p
    - **Evidence Rule**: For every issue, cite:
      - File path
      - Line numbers (or line range)
-     - Brief code excerpt (from key-files-snapshot.md)
+     - Brief code excerpt (**read directly from actual source files**, do NOT rely solely on key-files-snapshot.md which may be incomplete or incorrect)
+   - **Evidence Exceptions**: If evidence cannot be fully provided:
+     - Mark as `[FILE NOT IN SNAPSHOT - verified from source]` if you read the actual file
+     - Mark as `[REQUIRES MANUAL VERIFICATION]` if file is too large or binary
+     - Mark as `[INFERRED FROM PATTERN]` if issue is detected via grep/search without full file read
    - **Constraint**: Do NOT provide code modification suggestions. Focus on *diagnosis*, not *prescription*.
 
 6. **Generate a "Project Rules"** section suitable for AI assistants:
@@ -72,9 +86,36 @@ If not present, **READ** file `.prompt/prompts/repo-scanner.md` and generate `.p
    - Boundaries: What AI must NOT do (e.g., never modify payment logic, never add dependencies without approval).
    - Mandatory citation rule: Always reference file paths when making claims.
 
-### B) qa-deep.prompt.md must guide the assistant to
+### (C) Language Output Rules (CRITICAL)
 
-1. **Ask 3–8 clarifying questions** if user's question lacks context.
+**Natural language** (explanations, analysis, questions, section titles): Output in **Simplified Chinese**.
+
+**Preserve as-is** (do NOT translate):
+
+- Code snippets and excerpts
+- Variable names, function names, class names
+- Comments in source code (keep original language)
+- File paths and directory names
+- Configuration keys and values
+- Terminal commands
+- Error messages from logs/output
+- Technical terms that have no standard Chinese translation (e.g., "middleware", "hook", "callback")
+
+**Example**:
+
+```text
+Correct:
+在 `src/auth/login.ts` 第 45 行发现硬编码的密钥：
+`const API_KEY = "sk-1234567890";`  // 这个值不应该出现在代码中
+
+Wrong:
+在 `源代码/认证/登录.ts` 第 45 行发现硬编码的密钥：
+`常量 接口密钥 = "sk-1234567890";`  // 这个值不应该出现在代码中
+```
+
+### (B) qa-deep.prompt.md must guide the assistant to
+
+1. **Ask clarifying questions as needed** if user's question lacks context. Do NOT artificially limit the number—ask what is necessary.
 
 2. **Perform deep technical analysis** covering:
    - **Risk List**: At least 5 risks when possible, each with:
@@ -95,31 +136,29 @@ If not present, **READ** file `.prompt/prompts/repo-scanner.md` and generate `.p
 
 ## Output Format (STRICT)
 
-Return exactly two sections:
-
----FILE: .prompt/init.prompt.md---
+In file: .prompt/init.prompt.md
 
 ```text
 
-***
+---
 name: init-project-insight
 description: Deep repository analysis with reverse questioning and architectural audit
 mode: ask
-***
+---
 
 (English instruction body that enforces Simplified Chinese output and references .prompt/repo-summary.md and .prompt/key-files-snapshot.md)
 
 ```
 
----FILE: .prompt/qa-deep.prompt.md---
+In file: .prompt/qa-deep.prompt.md
 
 ```text
 
-***
+---
 name: qa-deep-risk-analysis
 description: Deep technical QA, risk analysis, test strategy, and issue diagnosis
 mode: ask
-***
+---
 
 (English instruction body that enforces Simplified Chinese output and references .prompt/repo-summary.md and .prompt/key-files-snapshot.md)
 
@@ -131,4 +170,22 @@ mode: ask
 - Do NOT output chain-of-thought reasoning.
 - Do NOT suggest code modifications in the prompt bodies.
 - The prompts must be reusable across different sessions and AI assistants.
-- Both prompts should instruct future assistants to read `.prompt/repo-summary.md` and `.prompt/key-files-snapshot.md` as context.
+- Both prompts should instruct future assistants to read `.prompt/repo-summary.md` and `.prompt/key-files-snapshot.md` **as preliminary reference**, but **always verify against actual source code**.
+
+## Model Signature Requirement
+
+**At the end of each generated prompt file**, append a signature block in the following format:
+
+```text
+---
+<!-- Generated by: [MODEL_NAME] -->
+<!-- Timestamp: [ISO 8601 datetime] -->
+<!-- Note: This prompt was auto-generated. Verify against actual source code before use. -->
+```
+
+Where:
+
+- `[MODEL_NAME]` = The name of the AI model that generated this file (e.g., "my model x", "My-Model-y-YYYYMMDD", etc. use the exact model name string, YYYYMMDD is the release date if applicable)
+- `[ISO 8601 datetime]` = Current date and time in ISO 8601 format (e.g., "2025-12-15T14:30:00Z", which can be read in system shell (bash) via `date -u +"%Y-%m-%dT%H:%M:%SZ"`, (powershell) via `Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"`), (cmd) via `powershell -Command "Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ'"`
+
+This signature serves as an audit trail and reminder that the content may need verification.

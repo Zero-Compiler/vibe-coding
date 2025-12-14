@@ -86,32 +86,43 @@ A collection of full or partial content from the most important files for unders
 
 Include (if they exist):
 
-- readme file `README.md` (full content, max 500 lines)
-- instructive file `CONTRIBUTING.md` or `DEVELOPMENT.md` (full content, max 300 lines)
-- project metadata file `package.json` / `pyproject.toml` / `Cargo.toml` / `pom.xml` (full content)
-- lint config file `tsconfig.json` / `jsconfig.json` / `.eslintrc` / `setup.cfg` (full content)
-- product config file `docker-compose.yml` / `Dockerfile` (full content if < 100 lines)
-- workflow file `.github/workflows/*.yml` (first workflow file only, max 100 lines)
-- Main entry file (e.g., `src/index.ts`, `main.py`, first 50 lines)
-- Root config files (e.g., `vite.config.ts`, `next.config.js`, first 50 lines)
+| File Type | Examples | Truncation Rule |
+|-----------|----------|----------------|
+| README | `README.md` | First 500 lines |
+| Contributing guide | `CONTRIBUTING.md`, `DEVELOPMENT.md` | First 300 lines |
+| Project metadata | `package.json`, `pyproject.toml`, `Cargo.toml`, `pom.xml` | Full (usually <100 lines) |
+| Lint/type config | `tsconfig.json`, `.eslintrc`, `setup.cfg` | Full (usually <50 lines) |
+| Container config | `docker-compose.yml`, `Dockerfile` | First 100 lines |
+| CI/CD workflow | `.github/workflows/*.yml`, `.gitlab-ci.yml`, `azure-pipelines.yml` | First workflow file, first 100 lines |
+| Main entry file | `src/index.ts`, `main.py`, `cmd/main.go` | First 50 lines |
+| Build config | `vite.config.ts`, `next.config.js`, `webpack.config.js` | First 50 lines |
+
+**Truncation Rule**: Always truncate at the specified line limit. "Full" means include entire file only if it's under 100 lines; otherwise truncate at 100 lines.
 
 #### Format
 
 For each file, use this structure:
 
 ```text
-
 ---FILE: <relative-path>---
+[TOTAL LINES: <N>] [STATUS: full | truncated at line <M>]
 <content>
-
 ```
 
-If a file is too long, include only the first N lines and add a marker:
+**Truncation marker** (MANDATORY when truncated):
 
 ```text
+... [TRUNCATED] (showing lines 1-<M> of <N> total)
+```
 
-... (truncated, total 500 lines)
+Example:
 
+```text
+---FILE: src/index.ts---
+[TOTAL LINES: 245] [STATUS: truncated at line 50]
+import express from 'express';
+// ... first 50 lines of code ...
+... [TRUNCATED] (showing lines 1-50 of 245 total)
 ```
 
 ---
@@ -120,7 +131,7 @@ If a file is too long, include only the first N lines and add a marker:
 
 Return exactly two sections:
 
----FILE: .prompt/repo-summary.md---
+In file: .prompt/repo-summary.md
 
 ```text
 
@@ -128,7 +139,7 @@ Return exactly two sections:
 
 ```
 
----FILE: .prompt/key-files-snapshot.md---
+In file: .prompt/key-files-snapshot.md
 
 ```text
 
