@@ -152,6 +152,6 @@ In file: .prompt/key-files-snapshot.md
 - Use professional, technical language.
 - Be concise: repo-summary.md should be 80–150 lines.
 - Be selective: key-files-snapshot.md should be 300–800 lines total.
-- Do NOT include any meta-commentary or explanation.
-- Do NOT output chain-of-thought reasoning.
+- **Do NOT** include any meta-commentary or explanation.
+- **Do NOT** output chain-of-thought reasoning.
 - Output ONLY the two file contents.
